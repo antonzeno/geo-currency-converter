@@ -1,6 +1,7 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import { getUserByEmail } from "../services/user.service";
-import { registerUser } from "../services/auth.service";
+import { handleUserRegister, verifyPassword } from "../services/auth.service";
 
 export const register = async (req: express.Request, res: express.Response) => {
     try {
@@ -11,13 +12,45 @@ export const register = async (req: express.Request, res: express.Response) => {
             return res.status(403).json("Email already in use.");
         }
 
-        const user = await registerUser(req.body);
-        return res.status(200).json(user);
+        const user = await handleUserRegister(req.body);
+        return res.status(200).json({ user });
     } catch (error) {
-        return res.status(500).json("Internal server error");
+        return res.status(500).json("An unexpected error occurred. Please try again later.");
     }
 };
 
 export const login = async (req: express.Request, res: express.Response) => {
-    console.log("login");
+    try {
+        const { email, password } = req.body;
+
+        const user = await getUserByEmail(email);
+        if (!user) {
+            return res.status(403).json("User doesn't exist.");
+        }
+
+        const match = await verifyPassword(password, user.password);
+
+        if (!match) {
+            return res.status(403).json("Invalid credentials. Please check your email or password.");
+        }
+
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+
+        res.cookie("jwt", token, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 3600000,
+        });
+
+        return res.status(200).json({ user });
+    } catch (error) {
+        return res.status(500).json("An unexpected error occurred. Please try again later.");
+    }
 };

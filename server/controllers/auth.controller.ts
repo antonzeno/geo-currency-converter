@@ -49,6 +49,11 @@ export const login = async (req: express.Request, res: express.Response) => {
             maxAge: 3600000,
         });
 
+        res.cookie("_auth", JSON.stringify({ userId: user.id }), {
+            secure: true,
+            maxAge: 3600000,
+        });
+
         return res.status(200).json({ user });
     } catch (error) {
         return res.status(500).json("An unexpected error occurred. Please try again later.");

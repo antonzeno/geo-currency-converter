@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const RegisterForm = () => {
+const Register = () => {
     const [message, setMessage] = useState({
         error: null,
         success: null,
@@ -19,15 +19,16 @@ const RegisterForm = () => {
 
     const validationSchema = Yup.object({
         email: Yup.string().email("Invalid email address").required("Required"),
-        password: Yup.string().min(6, "Password must be at least 8 characters").required("Password can't be empty."),
+        password: Yup.string().min(8, "Password must be at least 8 characters").required("Password can't be empty."),
         confirmPassword: Yup.string()
             .oneOf([Yup.ref("password"), null], "Passwords don't match")
             .required("Confirm Password can't be empty."),
     });
 
     const handleSubmit = async (values, { resetForm }) => {
-        setSubmitting(true);
         try {
+            setSubmitting(true);
+
             const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/auth/register`, values);
 
             if (response.status === 200) {
@@ -40,8 +41,9 @@ const RegisterForm = () => {
             } else {
                 setMessage({ error: "An unexpected error occurred. Please try again later.", success: null });
             }
+        } finally {
+            setSubmitting(false);
         }
-        setSubmitting(false);
     };
 
     return (
@@ -82,7 +84,7 @@ const RegisterForm = () => {
                                 {message.error ?? message.success}
                             </div>
                         )}
-                        <button type="submit" className="btn btn-primary mx-auto">
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
                             Register
                         </button>
                         <div className="mt-2">
@@ -95,4 +97,4 @@ const RegisterForm = () => {
     );
 };
 
-export default RegisterForm;
+export default Register;

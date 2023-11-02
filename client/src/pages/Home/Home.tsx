@@ -19,12 +19,19 @@ type Country = {
 };
 
 const Home = () => {
-    const [query, setQuery] = useState("");
-    const [countries, setCountries] = useState([]);
+    const [formState, setFormState] = useState({
+        query: "",
+        countries: [],
+        selected: [],
+        amount: "",
+    });
     const { isAuthenticated } = useContext(AuthContext);
 
     const handleOnSearch = async (string) => {
-        setQuery(string);
+        setFormState((prevState) => ({
+            ...prevState,
+            query: string,
+        }));
         if (string !== "") {
             try {
                 const response = await axios.get(
@@ -35,16 +42,26 @@ const Home = () => {
                 );
 
                 if (response.status === 200) {
-                    setCountries(response.data);
+                    setFormState((prevState) => ({
+                        ...prevState,
+                        countries: response.data,
+                    }));
                 }
             } catch (error) {
-                setCountries([]);
+                setFormState((prevState) => ({
+                    ...prevState,
+                    countries: [],
+                }));
             }
         }
     };
 
     const handleOnSelect = async (item) => {
-        setQuery("");
+        setFormState((prevState) => ({
+            ...prevState,
+            query: "",
+            selected: [...prevState.selected, item],
+        }));
     };
 
     const formatResult = (item) => {
@@ -55,23 +72,65 @@ const Home = () => {
         );
     };
 
+    const handleAmountChange = (e) => {
+        setFormState((prevState) => ({
+            ...prevState,
+            amount: e.target.value,
+        }));
+    };
+
     return (
         <div className="d-flex justify-content-center flex-column align-items-center w-100">
             <div className="h6 my-3">Search by country name:</div>
             <ReactSearchAutocomplete<Country>
-                items={countries}
+                items={formState.countries}
                 inputDebounce={500}
                 onSearch={handleOnSearch}
                 onSelect={handleOnSelect}
                 autoFocus
                 formatResult={formatResult}
-                inputSearchString={query}
+                inputSearchString={formState.query}
                 showNoResultsText={
-                    isAuthenticated ? `No results found for ${query}` : "You must log in in order to perform search."
+                    isAuthenticated
+                        ? `No results found for ${formState.query}`
+                        : "You must log in in order to perform search."
                 }
                 className="w-50 mb-5"
                 fuseOptions={{ keys: ["name.common", "name.official"] }}
             />
+            {formState.selected.length > 0 && (
+                <div className="container mt-5">
+                    <div className="d-flex">
+                        <span className="fw-bold me-2 text-muted">Enter amount in SEK to convert:</span>
+                        <input type="number" value={formState.amount} onChange={handleAmountChange} />
+                    </div>
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Country</th>
+                                <th scope="col">Population</th>
+                                <th scope="col">Currency</th>
+                                <th scope="col">Exchange rate</th>
+                                <th scope="col">Exchange amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {formState.selected.map((country) => (
+                                <tr key={country.id}>
+                                    <td>{country.name.common}</td>
+                                    <td>{country.population}</td>
+                                    <td>{country.currencies[0].code}</td>
+                                    <td>{country.currencies[0].sek_rate}</td>
+                                    <td>
+                                        {!isNaN(country.currencies[0].sek_rate * parseInt(formState.amount)) &&
+                                            country.currencies[0].sek_rate * parseInt(formState.amount)}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 };

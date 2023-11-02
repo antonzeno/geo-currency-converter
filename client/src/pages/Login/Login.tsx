@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 
 const Login = () => {
@@ -12,6 +12,7 @@ const Login = () => {
     });
     const [submitting, setSubmitting] = useState(false);
     const { isAuthenticated, login, logout } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const initialValues = {
         email: "",
@@ -35,6 +36,7 @@ const Login = () => {
                 resetForm();
                 setMessage({ error: null, success: "Login successful." });
                 login();
+                navigate("/");
             }
         } catch (error) {
             if (error.response) {

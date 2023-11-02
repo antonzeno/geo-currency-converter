@@ -6,6 +6,7 @@ import NavigationBar from "./components/NavigationBar/NavigationBar";
 import Home from "./pages/Home/Home";
 import Register from "./pages/Register/Register";
 import Login from "./pages/Login/Login";
+import AuthGuardedRoute from "./components/AuthGuardedRoute/AuthGuardedRoute";
 
 const App = () => {
     return (

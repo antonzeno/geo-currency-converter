@@ -23,7 +23,6 @@ export function AuthProvider({ children }: AuthContextProps) {
 
     useEffect(() => {
         const authStatus = cookies["_auth"] !== undefined;
-        console.log(authStatus);
         setIsAuthenticated(authStatus);
     }, [cookies]);
 

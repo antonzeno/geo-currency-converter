@@ -13,7 +13,7 @@ export const getCountriesByName = async (req: express.Request, res: express.Resp
             const currencies = getCurrenciesFromCountries(response.data);
             const currencyRates = await getCurrencyExchangeRates(currencies);
 
-            const countriesData = response.data.map((country) => {
+            const countriesData = response.data.map((country, idx) => {
                 const { common, official } = country.name;
 
                 const currencyData =
@@ -27,6 +27,7 @@ export const getCountriesByName = async (req: express.Request, res: express.Resp
                     );
 
                 return {
+                    id: idx,
                     name: {
                         common,
                         official,

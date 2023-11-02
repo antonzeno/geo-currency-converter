@@ -11,7 +11,7 @@ const Login = () => {
         success: null,
     });
     const [submitting, setSubmitting] = useState(false);
-    const { isAuthenticated, login, logout } = useContext(AuthContext);
+    const { isAuthenticated, logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const initialValues = {
@@ -35,7 +35,6 @@ const Login = () => {
             if (response.status === 200) {
                 resetForm();
                 setMessage({ error: null, success: "Login successful." });
-                login();
                 navigate("/");
             }
         } catch (error) {

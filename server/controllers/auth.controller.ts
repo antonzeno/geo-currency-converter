@@ -59,3 +59,10 @@ export const login = async (req: express.Request, res: express.Response) => {
         return res.status(500).json("An unexpected error occurred. Please try again later.");
     }
 };
+
+export const logout = (req: express.Request, res: express.Response) => {
+    res.clearCookie("jwt", { httpOnly: true, secure: true });
+    res.clearCookie("_auth", { secure: false });
+
+    return res.sendStatus(200);
+};

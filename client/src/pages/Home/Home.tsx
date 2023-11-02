@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { AuthContext } from "../../contexts/AuthContext";
 import axios from "axios";
+import CountriesTable from "../../components/CountriesTable/CountriesTable";
 
 type Country = {
     id: number;
@@ -23,7 +24,6 @@ const Home = () => {
         query: "",
         countries: [],
         selected: [],
-        amount: "",
     });
     const { isAuthenticated } = useContext(AuthContext);
 
@@ -72,13 +72,6 @@ const Home = () => {
         );
     };
 
-    const handleAmountChange = (e) => {
-        setFormState((prevState) => ({
-            ...prevState,
-            amount: e.target.value,
-        }));
-    };
-
     return (
         <div className="d-flex justify-content-center flex-column align-items-center w-100">
             <div className="h6 my-3">Search by country name:</div>
@@ -98,39 +91,7 @@ const Home = () => {
                 className="w-50 mb-5"
                 fuseOptions={{ keys: ["name.common", "name.official"] }}
             />
-            {formState.selected.length > 0 && (
-                <div className="container mt-5">
-                    <div className="d-flex">
-                        <span className="fw-bold me-2 text-muted">Enter amount in SEK to convert:</span>
-                        <input type="number" value={formState.amount} onChange={handleAmountChange} />
-                    </div>
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Country</th>
-                                <th scope="col">Population</th>
-                                <th scope="col">Currency</th>
-                                <th scope="col">Exchange rate</th>
-                                <th scope="col">Exchange amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {formState.selected.map((country) => (
-                                <tr key={country.id}>
-                                    <td>{country.name.common}</td>
-                                    <td>{country.population}</td>
-                                    <td>{country.currencies[0].code}</td>
-                                    <td>{country.currencies[0].sek_rate}</td>
-                                    <td>
-                                        {!isNaN(country.currencies[0].sek_rate * parseInt(formState.amount)) &&
-                                            country.currencies[0].sek_rate * parseInt(formState.amount)}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+            {formState.selected.length > 0 && <CountriesTable selected={formState.selected} />}
         </div>
     );
 };

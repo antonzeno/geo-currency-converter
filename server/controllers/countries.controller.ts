@@ -12,16 +12,18 @@ export const getCountriesByName = async (req: express.Request, res: express.Resp
         if (response.status === 200) {
             const currencies = getCurrenciesFromCountries(response.data);
             const currencyRates = await getCurrencyExchangeRates(currencies);
+            const eurToSek = currencyRates["SEK"] || null;
 
-            const countriesData = response.data.map((country, idx) => {
-                const { common, official } = country.name;
+            const countriesData = response.data.map(({ name, population, currencies: countryCurrencies }, idx) => {
+                const { common, official } = name;
 
                 const currencyData =
-                    country.currencies &&
-                    Object.entries(country.currencies).map(
+                    countryCurrencies &&
+                    Object.entries(countryCurrencies).map(
                         ([code, currency]: [string, { name: string; symbol: string }]) => {
                             const { name, symbol } = currency;
-                            const sek_rate = currencyRates[code] ?? null;
+                            const eurToLocal = currencyRates[code] || null;
+                            const sek_rate = eurToLocal !== null ? eurToLocal / eurToSek : null;
                             return { code, name, symbol, sek_rate };
                         }
                     );
@@ -32,7 +34,7 @@ export const getCountriesByName = async (req: express.Request, res: express.Resp
                         common,
                         official,
                     },
-                    population: country.population,
+                    population,
                     currencies: currencyData,
                 };
             });
@@ -48,10 +50,9 @@ export const getCountriesByName = async (req: express.Request, res: express.Resp
 
 const getCurrencyExchangeRates = async (currencies) => {
     try {
-        const currencyCodes = currencies.join(",");
-
+        const currencyCodes = currencies.concat("SEK").join(",");
         const response = await axios.get(
-            `http://data.fixer.io/api/latest?cbase=SEK&access_key=${process.env.FIXER_API_KEY}&symbols=${currencyCodes}`
+            `http://data.fixer.io/api/latest?base=EUR&access_key=${process.env.FIXER_API_KEY}&symbols=${currencyCodes}`
         );
 
         if (response.status === 200) {
@@ -60,7 +61,7 @@ const getCurrencyExchangeRates = async (currencies) => {
             return [];
         }
     } catch (error) {
-        return [];
+        return {};
     }
 };
 

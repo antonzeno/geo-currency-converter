@@ -32,6 +32,7 @@ const Home = () => {
             ...prevState,
             query: string,
         }));
+
         if (string !== "") {
             try {
                 const response = await axios.get(
@@ -57,11 +58,18 @@ const Home = () => {
     };
 
     const handleOnSelect = async (item) => {
-        setFormState((prevState) => ({
-            ...prevState,
-            query: "",
-            selected: [...prevState.selected, item],
-        }));
+        if (!formState.selected.find((selectedItem) => selectedItem.name.common === item.name.common)) {
+            setFormState((prevState) => ({
+                ...prevState,
+                query: "",
+                selected: [...prevState.selected, item],
+            }));
+        } else {
+            setFormState((prevState) => ({
+                ...prevState,
+                query: "",
+            }));
+        }
     };
 
     const formatResult = (item) => {

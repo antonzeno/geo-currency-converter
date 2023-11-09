@@ -1,9 +1,16 @@
 import express from "express";
 import axios from "axios";
+import { getClient } from "../redis/client.redis";
 
 export const getCountriesByName = async (req: express.Request, res: express.Response) => {
     try {
         const { name } = req.params;
+        const client = await getClient();
+        const cachedCountries = await client.get(name);
+
+        if (cachedCountries) {
+            return res.status(200).json(JSON.parse(cachedCountries));
+        }
 
         const response = await axios.get(`https://restcountries.com/v3.1/name/${encodeURIComponent(name)}`, {
             timeout: 5000,
@@ -38,6 +45,8 @@ export const getCountriesByName = async (req: express.Request, res: express.Resp
                     currencies: currencyData,
                 };
             });
+
+            await client.set(name, JSON.stringify(countriesData));
 
             return res.status(200).json(countriesData);
         } else {

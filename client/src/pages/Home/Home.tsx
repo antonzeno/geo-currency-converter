@@ -27,16 +27,16 @@ const Home = () => {
     });
     const { isAuthenticated } = useContext(AuthContext);
 
-    const handleOnSearch = async (string) => {
+    const handleOnSearch = async (q) => {
         setFormState((prevState) => ({
             ...prevState,
-            query: string,
+            query: q,
         }));
 
-        if (string !== "") {
+        if (q !== "") {
             try {
                 const response = await axios.get(
-                    `${process.env.REACT_APP_SERVER_URL}/countries/${encodeURIComponent(string)}`,
+                    `${process.env.REACT_APP_SERVER_URL}/countries/${encodeURIComponent(q)}`,
                     {
                         withCredentials: true,
                     }

@@ -25,14 +25,32 @@ const CountriesTable = ({ selected }) => {
                 </thead>
                 <tbody>
                     {selected.map((country) => (
-                        <tr key={country.id}>
+                        <tr key={country.name.common}>
                             <td>{country.name.common}</td>
                             <td>{country.population}</td>
-                            <td>{country.currencies[0].code}</td>
-                            <td>{country.currencies[0].sek_rate}</td>
                             <td>
-                                {!isNaN(country.currencies[0].sek_rate * parseInt(amount)) &&
-                                    country.currencies[0].sek_rate * parseInt(amount)}
+                                {country.currencies.map((currency) => (
+                                    <div key={`${country.id}-${currency.code}-${country.name.common}`}>
+                                        {currency.code}
+                                    </div>
+                                ))}
+                            </td>
+                            <td>
+                                {country.currencies.map((currency) => (
+                                    <div key={`${country.id}-${currency.code}-${country.name.common}`}>
+                                        {currency.sek_rate}
+                                    </div>
+                                ))}
+                            </td>
+                            <td>
+                                {country.currencies.map((currency) => {
+                                    const exchangeAmount = currency.sek_rate * parseInt(amount);
+                                    return (
+                                        <div key={`${country.id}-${currency.code}-${country.name.common}`}>
+                                            {!isNaN(exchangeAmount) && exchangeAmount}
+                                        </div>
+                                    );
+                                })}
                             </td>
                         </tr>
                     ))}

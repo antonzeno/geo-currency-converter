@@ -10,37 +10,47 @@ Follow these steps to run the project:
 
 2. **Install dependencies**
 
-   Inside the project root, run:
+    Inside the project root, run:
 
-   ```bash
-   npm install 
-   ```
-   Then, navigate to the `client` directory and run:
-   ```bash
-   npm install 
-   ```
-   Finally, go to the `server` directory and run:
-   ```bash
-   npm install 
-   ```
+    ```bash
+    npm install
+    ```
+
+    Then, navigate to the `client` directory and run:
+
+    ```bash
+    npm install
+    ```
+
+    Finally, go to the `server` directory and run:
+
+    ```bash
+    npm install
+    ```
+
 3. **Configure Environment Variables**
 
-    Create a `.env` file in both the `client` and `server` directories and add the       following:
-    
+    Create a `.env` file in both the `client` and `server` directories and add the following:
+
     ### Server:
 
-- **PORT**: The port on which the server will run.
-- **DATABASE_URL**: [Prisma Connection URL](https://www.prisma.io/docs/reference/database-reference/connection-urls).
-- **JWT_SECRET**: Secret key for JWT encoding.
-- **FIXER_API_KEY**: API key from [Fixer API Documentation](https://fixer.io/documentation#apikey).
-  ### Client:
-- **REACT_APP_SERVER_URL**: URL where the server is hosted.
-  
-   ## Start the project
+-   **PORT**: The port on which the server will run.
+-   **DATABASE_URL**: [Prisma Connection URL](https://www.prisma.io/docs/reference/database-reference/connection-urls).
+-   **JWT_SECRET**: Secret key for JWT encoding.
+-   **FIXER_API_KEY**: API key from [Fixer API Documentation](https://fixer.io/documentation#apikey).
+    ### Client:
+-   **REACT_APP_SERVER_URL**: URL where the server is hosted.
 
-  Inside the root directory, run:
-  
-  ```bash
-   npm start 
-   ```
-  
+    ## Start the project
+
+    Inside the server directory, run:
+
+    ```bash
+     docker run -p 6379:6379 -it redis/redis-stack-server:latest
+    ```
+
+    Inside the root directory, run:
+
+    ```bash
+     npm start
+    ```
